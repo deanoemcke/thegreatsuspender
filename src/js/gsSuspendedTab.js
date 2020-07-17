@@ -80,7 +80,7 @@ var gsSuspendedTab = (function() {
     const scrollPosition = gsUtils.getSuspendedScrollPosition(suspendedUrl);
     setScrollPosition(tabView.document, scrollPosition, previewMode);
     tgs.setTabStatePropForTabId(tab.id, tgs.STATE_SCROLL_POS, scrollPosition);
-    // const whitelisted = gsUtils.checkWhiteList(originalUrl);
+    // const allowlisted = gsUtils.checkAllowList(originalUrl);
   }
 
   function showNoConnectivityMessage(tabView) {

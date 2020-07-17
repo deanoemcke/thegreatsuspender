@@ -57,7 +57,7 @@
       "description": "__MSG_ext_cmd_toggle_tab_suspension_description__",
       "suggested_key": { "default": "Ctrl+Shift+S" }
     },
-    "2-toggle-temp-whitelist-tab": {
+    "2-toggle-temp-allowlist-tab": {
       "description": "__MSG_ext_cmd_toggle_tab_pause_description__"
     },
     "2a-suspend-selected-tabs": {

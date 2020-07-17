@@ -55,7 +55,7 @@ This extension has a small external api to allow other extensions to request the
 It is possible to force settings by defining group policies on Microsoft
 Windows.
 
-The whitelist is stored internally as a string, with one URL per line.
+The allowist is stored internally as a string, with one URL per line.
 
 The following settings can be defined:
 
@@ -77,7 +77,7 @@ The following settings can be defined:
 * `SYNC_SETTINGS` (boolean, default: true)
 * `SUSPEND_TIME` (string (minutes), default: '60')
 * `NO_NAG` (boolean, default: false)
-* `WHITELIST` (string (one URL per line), default: '')
+* `ALLOWLIST` (string (one URL per line), default: '')
 * `THEME` (string, default: 'light')
 
 ### Contributing to this extension

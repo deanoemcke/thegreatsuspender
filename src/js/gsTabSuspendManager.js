@@ -335,7 +335,7 @@ var gsTabSuspendManager = (function() {
 
   // forceLevel indicates which users preferences to respect when attempting to suspend the tab
   // 1: Suspend if at all possible
-  // 2: Respect whitelist, temporary whitelist, form input, pinned tabs, audible preferences, and exclude current active tab
+  // 2: Respect allowlist, temporary allowlist, form input, pinned tabs, audible preferences, and exclude current active tab
   // 3: Same as above (2), plus also respect internet connectivity, running on battery, and time to suspend=never preferences.
   function checkTabEligibilityForSuspension(tab, forceLevel) {
     if (forceLevel >= 1) {
@@ -350,7 +350,7 @@ var gsTabSuspendManager = (function() {
     if (forceLevel >= 2) {
       if (
         gsUtils.isProtectedActiveTab(tab) ||
-        gsUtils.checkWhiteList(tab.url) ||
+        gsUtils.checkAllowList(tab.url) ||
         gsUtils.isProtectedPinnedTab(tab) ||
         gsUtils.isProtectedAudibleTab(tab)
       ) {
@@ -384,7 +384,7 @@ var gsTabSuspendManager = (function() {
     if (
       forceLevel >= 2 &&
       (contentScriptStatus === gsUtils.STATUS_FORMINPUT ||
-        contentScriptStatus === gsUtils.STATUS_TEMPWHITELIST)
+        contentScriptStatus === gsUtils.STATUS_TEMPALLOWLIST)
     ) {
       return false;
     }
@@ -403,7 +403,7 @@ var gsTabSuspendManager = (function() {
             error
           );
           // continue here but will lose information about scroll position,
-          // temp whitelist, and form input
+          // temp allowlist, and form input
         }
         resolve(tabInfo);
       });

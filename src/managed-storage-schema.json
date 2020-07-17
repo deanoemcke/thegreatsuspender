@@ -55,7 +55,7 @@
     "NO_NAG": {
       "type": "boolean"
     },
-    "WHITELIST": {
+    "ALLOWLIST": {
       "type": "string"
     },
     "THEME": {

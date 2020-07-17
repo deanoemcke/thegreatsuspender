@@ -12,10 +12,10 @@
   let isFormListenerInitialised = false;
   let isReceivingFormInput = false;
   let isIgnoreForms = false;
-  let tempWhitelist = false;
+  let tempAllowlist = false;
 
   function formInputListener(e) {
-    if (!isReceivingFormInput && !tempWhitelist) {
+    if (!isReceivingFormInput && !tempAllowlist) {
       if (event.keyCode >= 48 && event.keyCode <= 90 && event.target.tagName) {
         if (
           event.target.tagName.toUpperCase() === 'INPUT' ||
@@ -69,11 +69,11 @@
         }
         isReceivingFormInput = isReceivingFormInput && isIgnoreForms;
       }
-      if (request.hasOwnProperty('tempWhitelist')) {
-        if (isReceivingFormInput && !request.tempWhitelist) {
+      if (request.hasOwnProperty('tempAllowlist')) {
+        if (isReceivingFormInput && !request.tempAllowlist) {
           isReceivingFormInput = false;
         }
-        tempWhitelist = request.tempWhitelist;
+        tempAllowlist = request.tempAllowlist;
       }
       sendResponse(buildReportTabStatePayload());
       return false;
@@ -115,8 +115,8 @@
       status:
         isIgnoreForms && isReceivingFormInput
           ? 'formInput'
-          : tempWhitelist
-            ? 'tempWhitelist'
+          : tempAllowlist
+            ? 'tempAllowlist'
             : 'normal',
       scrollPos:
         document.body.scrollTop || document.documentElement.scrollTop || 0,

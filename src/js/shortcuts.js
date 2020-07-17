@@ -15,7 +15,7 @@
 
     var notSetMessage = chrome.i18n.getMessage('js_shortcuts_not_set');
     var groupingKeys = [
-      '2-toggle-temp-whitelist-tab',
+      '2-toggle-temp-allowlist-tab',
       '2b-unsuspend-selected-tabs',
       '4-unsuspend-active-window',
     ];

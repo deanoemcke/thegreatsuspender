@@ -8,13 +8,13 @@ var gsMessages = {
   sendInitTabToContentScript(
     tabId,
     ignoreForms,
-    tempWhitelist,
+    tempAllowlist,
     scrollPos,
     callback
   ) {
     var payload = {
       ignoreForms: ignoreForms,
-      tempWhitelist: tempWhitelist,
+      tempAllowlist: tempAllowlist,
     };
     if (scrollPos) {
       payload.scrollPos = scrollPos;
@@ -44,22 +44,22 @@ var gsMessages = {
     );
   },
 
-  sendTemporaryWhitelistToContentScript: function(tabId, callback) {
+  sendTemporaryAllowlistToContentScript: function(tabId, callback) {
     gsMessages.sendMessageToContentScript(
       tabId,
       {
-        tempWhitelist: true,
+        tempAllowlist: true,
       },
       gsMessages.WARNING,
       callback
     );
   },
 
-  sendUndoTemporaryWhitelistToContentScript: function(tabId, callback) {
+  sendUndoTemporaryAllowlistToContentScript: function(tabId, callback) {
     gsMessages.sendMessageToContentScript(
       tabId,
       {
-        tempWhitelist: false,
+        tempAllowlist: false,
       },
       gsMessages.WARNING,
       callback

@@ -2,7 +2,7 @@
 'use strict';
 
 // Used to keep track of which settings were defined in the managed storage
-const managedOptions = []; // Example: ["gsTheme, gsWhitelist"]
+const managedOptions = []; // Example: ["gsTheme, gsAllowlist"]
 
 const gsStorageSettings = {
   SCREEN_CAPTURE: 'screenCapture',
@@ -21,7 +21,7 @@ const gsStorageSettings = {
   SYNC_SETTINGS: 'gsSyncSettings',
   NO_NAG: 'gsNoNag',
   THEME: 'gsTheme',
-  WHITELIST: 'gsWhitelist',
+  ALLOWLIST: 'gsAllowlist',
 
   DISCARD_AFTER_SUSPEND: 'discardAfterSuspend',
   DISCARD_IN_PLACE_OF_SUSPEND: 'discardInPlaceOfSuspend',
@@ -62,7 +62,7 @@ var gsStorage = {
     defaults[gsStorage.SYNC_SETTINGS] = true;
     defaults[gsStorage.SUSPEND_TIME] = '60';
     defaults[gsStorage.NO_NAG] = false;
-    defaults[gsStorage.WHITELIST] = '';
+    defaults[gsStorage.ALLOWLIST] = '';
     defaults[gsStorage.THEME] = 'light';
 
     return defaults;
@@ -186,7 +186,7 @@ var gsStorage = {
       const settings = gsStorage.getSettings();
 
       Object.keys(result).forEach(key => {
-        if (key === "WHITELIST") {
+        if (key === "ALLOWLIST") {
           settings[gsStorage[key]] = result[key].replace(/[\s\n]+/g, "\n");
         } else {
           settings[gsStorage[key]] = result[key];
@@ -455,7 +455,7 @@ var gsStorage = {
    * Used by the options page to tell whether an option is set in managed storage
    * and thus should not be changed.
    *
-   * @param option The option name, such as "gsWhitelist" (not "WHITELIST")
+   * @param option The option name, such as "gsAllowlist" (not "ALLOWLIST")
    */
   isOptionManaged: option => managedOptions.includes(option)
 };

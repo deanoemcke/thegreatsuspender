@@ -79,8 +79,8 @@
         gsUtils.STATUS_BLOCKED_FILE,
         gsUtils.STATUS_UNKNOWN,
       ].includes(tabStatus),
-      whitelistVisible = ![
-        gsUtils.STATUS_WHITELISTED,
+      allowlistVisible = ![
+        gsUtils.STATUS_ALLOWLISTED,
         gsUtils.STATUS_SPECIAL,
         gsUtils.STATUS_BLOCKED_FILE,
         gsUtils.STATUS_UNKNOWN,
@@ -93,15 +93,15 @@
       document.getElementById('suspendOne').style.display = 'none';
     }
 
-    if (whitelistVisible) {
-      document.getElementById('whitelistPage').style.display = 'block';
-      document.getElementById('whitelistDomain').style.display = 'block';
+    if (allowlistVisible) {
+      document.getElementById('allowlistPage').style.display = 'block';
+      document.getElementById('allowlistDomain').style.display = 'block';
     } else {
-      document.getElementById('whitelistPage').style.display = 'none';
-      document.getElementById('whitelistDomain').style.display = 'none';
+      document.getElementById('allowlistPage').style.display = 'none';
+      document.getElementById('allowlistDomain').style.display = 'none';
     }
 
-    if (suspendOneVisible || whitelistVisible) {
+    if (suspendOneVisible || allowlistVisible) {
       document.getElementById('optsCurrent').style.display = 'block';
     } else {
       document.getElementById('optsCurrent').style.display = 'none';
@@ -150,11 +150,11 @@
     } else if (status === gsUtils.STATUS_SPECIAL) {
       statusDetail = chrome.i18n.getMessage('js_popup_special');
       //    statusIconClass = 'fa fa-remove';
-    } else if (status === gsUtils.STATUS_WHITELISTED) {
+    } else if (status === gsUtils.STATUS_ALLOWLISTED) {
       statusDetail =
-        chrome.i18n.getMessage('js_popup_whitelisted') +
+        chrome.i18n.getMessage('js_popup_allowlisted') +
         " <a href='#'>" +
-        chrome.i18n.getMessage('js_popup_whitelisted_remove') +
+        chrome.i18n.getMessage('js_popup_allowlisted_remove') +
         '</a>';
       //    statusIconClass = 'fa fa-check';
     } else if (status === gsUtils.STATUS_AUDIBLE) {
@@ -169,11 +169,11 @@
       //    statusIconClass = 'fa fa-edit';
     } else if (status === gsUtils.STATUS_PINNED) {
       statusDetail = chrome.i18n.getMessage('js_popup_pinned'); //  statusIconClass = 'fa fa-thumb-tack';
-    } else if (status === gsUtils.STATUS_TEMPWHITELIST) {
+    } else if (status === gsUtils.STATUS_TEMPALLOWLIST) {
       statusDetail =
-        chrome.i18n.getMessage('js_popup_temp_whitelist') +
+        chrome.i18n.getMessage('js_popup_temp_allowlist') +
         " <a href='#'>" +
-        chrome.i18n.getMessage('js_popup_temp_whitelist_unpause') +
+        chrome.i18n.getMessage('js_popup_temp_allowlist_unpause') +
         '</a>';
       //    statusIconClass = 'fa fa-pause';
     } else if (status === gsUtils.STATUS_NOCONNECTIVITY) {
@@ -227,16 +227,16 @@
         status === gsUtils.STATUS_NORMAL ||
         status === gsUtils.STATUS_ACTIVE
       ) {
-        tgsHanderFunc = tgs.requestToggleTempWhitelistStateOfHighlightedTab;
+        tgsHanderFunc = tgs.requestToggleTempAllowlistStateOfHighlightedTab;
       } else if (status === gsUtils.STATUS_SUSPENDED) {
-        tgsHanderFunc = tgs.requestToggleTempWhitelistStateOfHighlightedTab;
-      } else if (status === gsUtils.STATUS_WHITELISTED) {
-        tgsHanderFunc = tgs.unwhitelistHighlightedTab;
+        tgsHanderFunc = tgs.requestToggleTempAllowlistStateOfHighlightedTab;
+      } else if (status === gsUtils.STATUS_ALLOWLISTED) {
+        tgsHanderFunc = tgs.unallowlistHighlightedTab;
       } else if (
         status === gsUtils.STATUS_FORMINPUT ||
-        status === gsUtils.STATUS_TEMPWHITELIST
+        status === gsUtils.STATUS_TEMPALLOWLIST
       ) {
-        tgsHanderFunc = tgs.requestToggleTempWhitelistStateOfHighlightedTab;
+        tgsHanderFunc = tgs.requestToggleTempAllowlistStateOfHighlightedTab;
       } else if (status === gsUtils.STATUS_BLOCKED_FILE) {
         tgsHanderFunc = tgs.promptForFilePermissions;
       }
@@ -304,17 +304,17 @@
         window.close();
       });
     document
-      .getElementById('whitelistDomain')
+      .getElementById('allowlistDomain')
       .addEventListener('click', function(e) {
-        tgs.whitelistHighlightedTab(false);
-        setStatus(gsUtils.STATUS_WHITELISTED);
+        tgs.allowlistHighlightedTab(false);
+        setStatus(gsUtils.STATUS_ALLOWLISTED);
         // window.close();
       });
     document
-      .getElementById('whitelistPage')
+      .getElementById('allowlistPage')
       .addEventListener('click', function(e) {
-        tgs.whitelistHighlightedTab(true);
-        setStatus(gsUtils.STATUS_WHITELISTED);
+        tgs.allowlistHighlightedTab(true);
+        setStatus(gsUtils.STATUS_ALLOWLISTED);
         // window.close();
       });
     document

@@ -23,7 +23,7 @@ var tgs = (function() {
   const STATE_TIMER_DETAILS = 'timerDetails';
 
   // Suspended tab props
-  const STATE_TEMP_WHITELIST_ON_RELOAD = 'whitelistOnReload';
+  const STATE_TEMP_ALLOWLIST_ON_RELOAD = 'allowlistOnReload';
   const STATE_DISABLE_UNSUSPEND_ON_RELOAD = 'disableUnsuspendOnReload';
   const STATE_INITIALISE_SUSPENDED_TAB = 'initialiseSuspendedTab';
   const STATE_UNLOADED_URL = 'unloadedUrl';
@@ -254,7 +254,7 @@ var tgs = (function() {
     }
   }
 
-  function whitelistHighlightedTab(includePath) {
+  function allowlistHighlightedTab(includePath) {
     includePath = includePath || false;
     getCurrentlyActiveTab(function(activeTab) {
       if (activeTab) {
@@ -264,11 +264,11 @@ var tgs = (function() {
             includePath,
             false
           );
-          gsUtils.saveToWhitelist(url);
+          gsUtils.saveToAllowlist(url);
           unsuspendTab(activeTab);
         } else if (gsUtils.isNormalTab(activeTab)) {
           let url = gsUtils.getRootUrl(activeTab.url, includePath, false);
-          gsUtils.saveToWhitelist(url);
+          gsUtils.saveToAllowlist(url);
           calculateTabStatus(activeTab, null, function(status) {
             setIconStatus(status, activeTab.id);
           });
@@ -277,10 +277,10 @@ var tgs = (function() {
     });
   }
 
-  function unwhitelistHighlightedTab(callback) {
+  function unallowlistHighlightedTab(callback) {
     getCurrentlyActiveTab(function(activeTab) {
       if (activeTab) {
-        gsUtils.removeFromWhitelist(activeTab.url);
+        gsUtils.removeFromAllowlist(activeTab.url);
         calculateTabStatus(activeTab, null, function(status) {
           setIconStatus(status, activeTab.id);
           if (callback) callback(status);
@@ -291,7 +291,7 @@ var tgs = (function() {
     });
   }
 
-  function requestToggleTempWhitelistStateOfHighlightedTab(callback) {
+  function requestToggleTempAllowlistStateOfHighlightedTab(callback) {
     getCurrentlyActiveTab(function(activeTab) {
       if (!activeTab) {
         if (callback) callback(status);
@@ -312,12 +312,12 @@ var tgs = (function() {
           status === gsUtils.STATUS_ACTIVE ||
           status === gsUtils.STATUS_NORMAL
         ) {
-          setTempWhitelistStateForTab(activeTab, callback);
+          setTempAllowlistStateForTab(activeTab, callback);
         } else if (
-          status === gsUtils.STATUS_TEMPWHITELIST ||
+          status === gsUtils.STATUS_TEMPALLOWLIST ||
           status === gsUtils.STATUS_FORMINPUT
         ) {
-          unsetTempWhitelistStateForTab(activeTab, callback);
+          unsetTempAllowlistStateForTab(activeTab, callback);
         } else {
           if (callback) callback(status);
         }
@@ -325,15 +325,15 @@ var tgs = (function() {
     });
   }
 
-  function setTempWhitelistStateForTab(tab, callback) {
-    gsMessages.sendTemporaryWhitelistToContentScript(tab.id, function(
+  function setTempAllowlistStateForTab(tab, callback) {
+    gsMessages.sendTemporaryAllowlistToContentScript(tab.id, function(
       error,
       response
     ) {
       if (error) {
         gsUtils.warning(
           tab.id,
-          'Failed to sendTemporaryWhitelistToContentScript',
+          'Failed to sendTemporaryAllowlistToContentScript',
           error
         );
       }
@@ -342,7 +342,7 @@ var tgs = (function() {
       calculateTabStatus(tab, contentScriptStatus, function(newStatus) {
         setIconStatus(newStatus, tab.id);
         //This is a hotfix for issue #723
-        if (newStatus === 'tempWhitelist' && tab.autoDiscardable) {
+        if (newStatus === 'tempAllowlist' && tab.autoDiscardable) {
           chrome.tabs.update(tab.id, {
             autoDiscardable: false,
           });
@@ -352,15 +352,15 @@ var tgs = (function() {
     });
   }
 
-  function unsetTempWhitelistStateForTab(tab, callback) {
-    gsMessages.sendUndoTemporaryWhitelistToContentScript(tab.id, function(
+  function unsetTempAllowlistStateForTab(tab, callback) {
+    gsMessages.sendUndoTemporaryAllowlistToContentScript(tab.id, function(
       error,
       response
     ) {
       if (error) {
         gsUtils.warning(
           tab.id,
-          'Failed to sendUndoTemporaryWhitelistToContentScript',
+          'Failed to sendUndoTemporaryAllowlistToContentScript',
           error
         );
       }
@@ -369,7 +369,7 @@ var tgs = (function() {
       calculateTabStatus(tab, contentScriptStatus, function(newStatus) {
         setIconStatus(newStatus, tab.id);
         //This is a hotfix for issue #723
-        if (newStatus !== 'tempWhitelist' && !tab.autoDiscardable) {
+        if (newStatus !== 'tempAllowlist' && !tab.autoDiscardable) {
           chrome.tabs.update(tab.id, {
             //async
             autoDiscardable: true,
@@ -739,9 +739,9 @@ var tgs = (function() {
 
     if (changeInfo.hasOwnProperty('status')) {
       if (changeInfo.status === 'complete') {
-        const tempWhitelistOnReload = getTabStatePropForTabId(
+        const tempAllowlistOnReload = getTabStatePropForTabId(
           tab.id,
-          STATE_TEMP_WHITELIST_ON_RELOAD
+          STATE_TEMP_ALLOWLIST_ON_RELOAD
         );
         const scrollPos =
           getTabStatePropForTabId(tab.id, STATE_SCROLL_POS) || null;
@@ -764,7 +764,7 @@ var tgs = (function() {
 
         //init loaded tab
         resetAutoSuspendTimerForTab(tab);
-        initialiseTabContentScript(tab, tempWhitelistOnReload, scrollPos)
+        initialiseTabContentScript(tab, tempAllowlistOnReload, scrollPos)
           .catch(error => {
             gsUtils.warning(
               tab.id,
@@ -808,13 +808,13 @@ var tgs = (function() {
     });
   }
 
-  function initialiseTabContentScript(tab, isTempWhitelist, scrollPos) {
+  function initialiseTabContentScript(tab, isTempAllowlist, scrollPos) {
     return new Promise((resolve, reject) => {
       const ignoreForms = gsStorage.getOption(gsStorage.IGNORE_FORMS);
       gsMessages.sendInitTabToContentScript(
         tab.id,
         ignoreForms,
-        isTempWhitelist,
+        isTempAllowlist,
         scrollPos,
         (error, response) => {
           if (error) {
@@ -1335,9 +1335,9 @@ var tgs = (function() {
   //formInput: a tab that has a partially completed form (and IGNORE_FORMS is true)
   //audible: a tab that is playing audio (and IGNORE_AUDIO is true)
   //active: a tab that is active (and IGNORE_ACTIVE_TABS is true)
-  //tempWhitelist: a tab that has been manually paused
+  //tempAllowlist: a tab that has been manually paused
   //pinned: a pinned tab (and IGNORE_PINNED is true)
-  //whitelisted: a tab that has been whitelisted
+  //allowlisted: a tab that has been allowlisted
   //charging: computer currently charging (and IGNORE_WHEN_CHARGING is true)
   //noConnectivity: internet currently offline (and IGNORE_WHEN_OFFLINE is true)
   //unknown: an error detecting tab status
@@ -1367,13 +1367,13 @@ var tgs = (function() {
       callback(gsUtils.STATUS_SUSPENDED);
       return;
     }
-    //check whitelist
-    if (gsUtils.checkWhiteList(tab.url)) {
-      callback(gsUtils.STATUS_WHITELISTED);
+    //check allowlist
+    if (gsUtils.checkAllowList(tab.url)) {
+      callback(gsUtils.STATUS_ALLOWLISTED);
       return;
     }
     //check never suspend
-    //should come after whitelist check as it causes popup to show the whitelisting option
+    //should come after allowlist check as it causes popup to show the allowlisting option
     if (gsStorage.getOption(gsStorage.SUSPEND_TIME) === '0') {
       callback(gsUtils.STATUS_NEVER);
       return;
@@ -1497,17 +1497,17 @@ var tgs = (function() {
       chrome.contextMenus.create({
         title: chrome.i18n.getMessage('js_context_toggle_pause_suspension'),
         contexts: allContexts,
-        onclick: () => requestToggleTempWhitelistStateOfHighlightedTab(),
+        onclick: () => requestToggleTempAllowlistStateOfHighlightedTab(),
       });
       chrome.contextMenus.create({
         title: chrome.i18n.getMessage('js_context_never_suspend_page'),
         contexts: allContexts,
-        onclick: () => whitelistHighlightedTab(true),
+        onclick: () => allowlistHighlightedTab(true),
       });
       chrome.contextMenus.create({
         title: chrome.i18n.getMessage('js_context_never_suspend_domain'),
         contexts: allContexts,
-        onclick: () => whitelistHighlightedTab(false),
+        onclick: () => allowlistHighlightedTab(false),
       });
 
       chrome.contextMenus.create({
@@ -1579,8 +1579,8 @@ var tgs = (function() {
     chrome.commands.onCommand.addListener(function(command) {
       if (command === '1-suspend-tab') {
         toggleSuspendedStateOfHighlightedTab();
-      } else if (command === '2-toggle-temp-whitelist-tab') {
-        requestToggleTempWhitelistStateOfHighlightedTab();
+      } else if (command === '2-toggle-temp-allowlist-tab') {
+        requestToggleTempAllowlistStateOfHighlightedTab();
       } else if (command === '2a-suspend-selected-tabs') {
         suspendSelectedTabs();
       } else if (command === '2b-unsuspend-selected-tabs') {
@@ -1615,7 +1615,7 @@ var tgs = (function() {
         request && request.status ? request.status : null;
       if (
         contentScriptStatus === 'formInput' ||
-        contentScriptStatus === 'tempWhitelist'
+        contentScriptStatus === 'tempAllowlist'
       ) {
         chrome.tabs.update(sender.tab.id, { autoDiscardable: false });
       } else if (!sender.tab.autoDiscardable) {
@@ -1838,7 +1838,7 @@ var tgs = (function() {
     STATE_UNLOADED_URL,
     STATE_INITIALISE_SUSPENDED_TAB,
     STATE_HISTORY_URL_TO_REMOVE,
-    STATE_TEMP_WHITELIST_ON_RELOAD,
+    STATE_TEMP_ALLOWLIST_ON_RELOAD,
     STATE_DISABLE_UNSUSPEND_ON_RELOAD,
     STATE_SET_AUTODISCARDABLE,
     STATE_SUSPEND_REASON,
@@ -1870,14 +1870,14 @@ var tgs = (function() {
 
     unsuspendTab,
     unsuspendHighlightedTab,
-    unwhitelistHighlightedTab,
-    requestToggleTempWhitelistStateOfHighlightedTab,
+    unallowlistHighlightedTab,
+    requestToggleTempAllowlistStateOfHighlightedTab,
     suspendHighlightedTab,
     suspendAllTabs,
     unsuspendAllTabs,
     suspendSelectedTabs,
     unsuspendSelectedTabs,
-    whitelistHighlightedTab,
+    allowlistHighlightedTab,
     unsuspendAllTabsInAllWindows,
     promptForFilePermissions,
   };

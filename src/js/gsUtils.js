@@ -15,9 +15,9 @@ var gsUtils = {
   STATUS_FORMINPUT: 'formInput',
   STATUS_AUDIBLE: 'audible',
   STATUS_ACTIVE: 'active',
-  STATUS_TEMPWHITELIST: 'tempWhitelist',
+  STATUS_TEMPALLOWLIST: 'tempAllowlist',
   STATUS_PINNED: 'pinned',
-  STATUS_WHITELISTED: 'whitelisted',
+  STATUS_ALLOWLISTED: 'allowlisted',
   STATUS_CHARGING: 'charging',
   STATUS_NOCONNECTIVITY: 'noConnectivity',
   STATUS_UNKNOWN: 'unknown',
@@ -270,102 +270,102 @@ var gsUtils = {
     });
   },
 
-  checkWhiteList: function(url) {
-    return gsUtils.checkSpecificWhiteList(
+  checkAllowList: function(url) {
+    return gsUtils.checkSpecificAllowList(
       url,
-      gsStorage.getOption(gsStorage.WHITELIST)
+      gsStorage.getOption(gsStorage.ALLOWLIST)
     );
   },
 
-  checkSpecificWhiteList: function(url, whitelistString) {
-    var whitelistItems = whitelistString
-        ? whitelistString.split(/[\s\n]+/)
+  checkSpecificAllowList: function(url, allowlistString) {
+    var allowlistItems = allowlistString
+        ? allowlistString.split(/[\s\n]+/)
         : [],
-      whitelisted;
+      allowlisted;
 
-    whitelisted = whitelistItems.some(function(item) {
+    allowlisted = allowlistItems.some(function(item) {
       return gsUtils.testForMatch(item, url);
     }, this);
-    return whitelisted;
+    return allowlisted;
   },
 
-  removeFromWhitelist: function(url) {
-    var oldWhitelistString = gsStorage.getOption(gsStorage.WHITELIST) || '',
-      whitelistItems = oldWhitelistString.split(/[\s\n]+/).sort(),
+  removeFromAllowlist: function(url) {
+    var oldAllowlistString = gsStorage.getOption(gsStorage.ALLOWLIST) || '',
+      allowlistItems = oldAllowlistString.split(/[\s\n]+/).sort(),
       i;
 
-    for (i = whitelistItems.length - 1; i >= 0; i--) {
-      if (gsUtils.testForMatch(whitelistItems[i], url)) {
-        whitelistItems.splice(i, 1);
+    for (i = allowlistItems.length - 1; i >= 0; i--) {
+      if (gsUtils.testForMatch(allowlistItems[i], url)) {
+        allowlistItems.splice(i, 1);
       }
     }
-    var whitelistString = whitelistItems.join('\n');
-    gsStorage.setOptionAndSync(gsStorage.WHITELIST, whitelistString);
+    var allowlistString = allowlistItems.join('\n');
+    gsStorage.setOptionAndSync(gsStorage.ALLOWLIST, allowlistString);
 
-    var key = gsStorage.WHITELIST;
+    var key = gsStorage.ALLOWLIST;
     gsUtils.performPostSaveUpdates(
       [key],
-      { [key]: oldWhitelistString },
-      { [key]: whitelistString }
+      { [key]: oldAllowlistString },
+      { [key]: allowlistString }
     );
   },
 
-  testForMatch: function(whitelistItem, word) {
-    if (whitelistItem.length < 1) {
+  testForMatch: function(allowlistItem, word) {
+    if (allowlistItem.length < 1) {
       return false;
 
       //test for regex ( must be of the form /foobar/ )
     } else if (
-      whitelistItem.length > 2 &&
-      whitelistItem.indexOf('/') === 0 &&
-      whitelistItem.indexOf('/', whitelistItem.length - 1) !== -1
+      allowlistItem.length > 2 &&
+      allowlistItem.indexOf('/') === 0 &&
+      allowlistItem.indexOf('/', allowlistItem.length - 1) !== -1
     ) {
-      whitelistItem = whitelistItem.substring(1, whitelistItem.length - 1);
+      allowlistItem = allowlistItem.substring(1, allowlistItem.length - 1);
       try {
-        new RegExp(whitelistItem); // eslint-disable-line no-new
+        new RegExp(allowlistItem); // eslint-disable-line no-new
       } catch (e) {
         return false;
       }
-      return new RegExp(whitelistItem).test(word);
+      return new RegExp(allowlistItem).test(word);
 
       // test as substring
     } else {
-      return word.indexOf(whitelistItem) >= 0;
+      return word.indexOf(allowlistItem) >= 0;
     }
   },
 
-  saveToWhitelist: function(newString) {
-    var oldWhitelistString = gsStorage.getOption(gsStorage.WHITELIST) || '';
-    var newWhitelistString = oldWhitelistString + '\n' + newString;
-    newWhitelistString = gsUtils.cleanupWhitelist(newWhitelistString);
-    gsStorage.setOptionAndSync(gsStorage.WHITELIST, newWhitelistString);
+  saveToAllowlist: function(newString) {
+    var oldAllowlistString = gsStorage.getOption(gsStorage.ALLOWLIST) || '';
+    var newAllowlistString = oldAllowlistString + '\n' + newString;
+    newAllowlistString = gsUtils.cleanupAllowlist(newAllowlistString);
+    gsStorage.setOptionAndSync(gsStorage.ALLOWLIST, newAllowlistString);
 
-    var key = gsStorage.WHITELIST;
+    var key = gsStorage.ALLOWLIST;
     gsUtils.performPostSaveUpdates(
       [key],
-      { [key]: oldWhitelistString },
-      { [key]: newWhitelistString }
+      { [key]: oldAllowlistString },
+      { [key]: newAllowlistString }
     );
   },
 
-  cleanupWhitelist: function(whitelist) {
-    var whitelistItems = whitelist ? whitelist.split(/[\s\n]+/).sort() : '',
+  cleanupAllowlist: function(allowlist) {
+    var allowlistItems = allowlist ? allowlist.split(/[\s\n]+/).sort() : '',
       i,
       j;
 
-    for (i = whitelistItems.length - 1; i >= 0; i--) {
-      j = whitelistItems.lastIndexOf(whitelistItems[i]);
+    for (i = allowlistItems.length - 1; i >= 0; i--) {
+      j = allowlistItems.lastIndexOf(allowlistItems[i]);
       if (j !== i) {
-        whitelistItems.splice(i + 1, j - i);
+        allowlistItems.splice(i + 1, j - i);
       }
-      if (!whitelistItems[i] || whitelistItems[i] === '') {
-        whitelistItems.splice(i, 1);
+      if (!allowlistItems[i] || allowlistItems[i] === '') {
+        allowlistItems.splice(i, 1);
       }
     }
-    if (whitelistItems.length) {
-      return whitelistItems.join('\n');
+    if (allowlistItems.length) {
+      return allowlistItems.join('\n');
     } else {
-      return whitelistItems;
+      return allowlistItems;
     }
   },
 
@@ -711,14 +711,14 @@ var gsUtils = {
           (changedSettingKeys.includes(gsStorage.IGNORE_WHEN_CHARGING) &&
             !gsStorage.getOption(gsStorage.IGNORE_WHEN_CHARGING) &&
             tgs.isCharging()) ||
-          (changedSettingKeys.includes(gsStorage.WHITELIST) &&
-            (gsUtils.checkSpecificWhiteList(
+          (changedSettingKeys.includes(gsStorage.ALLOWLIST) &&
+            (gsUtils.checkSpecificAllowList(
               tab.url,
-              oldValueBySettingKey[gsStorage.WHITELIST]
+              oldValueBySettingKey[gsStorage.ALLOWLIST]
             ) &&
-              !gsUtils.checkSpecificWhiteList(
+              !gsUtils.checkSpecificAllowList(
                 tab.url,
-                newValueBySettingKey[gsStorage.WHITELIST]
+                newValueBySettingKey[gsStorage.ALLOWLIST]
               )));
         if (updateSuspendTime) {
           tgs.resetAutoSuspendTimerForTab(tab);

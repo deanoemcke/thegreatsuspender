@@ -24,7 +24,7 @@
     syncSettings: gsStorage.SYNC_SETTINGS,
     timeToSuspend: gsStorage.SUSPEND_TIME,
     theme: gsStorage.THEME,
-    whitelist: gsStorage.WHITELIST,
+    allowlist: gsStorage.ALLOWLIST,
   };
 
   function selectComboBox(element, key) {
@@ -173,9 +173,9 @@
       oldValue = gsStorage.getOption(pref),
       newValue = getOptionValue(element);
 
-    //clean up whitelist before saving
-    if (pref === gsStorage.WHITELIST) {
-      newValue = gsUtils.cleanupWhitelist(newValue);
+    //clean up allowlist before saving
+    if (pref === gsStorage.ALLOWLIST) {
+      newValue = gsUtils.cleanupAllowlist(newValue);
     }
 
     //save option
@@ -207,7 +207,7 @@
       }
     }
 
-    document.getElementById('testWhitelistBtn').onclick = async e => {
+    document.getElementById('testAllowlistBtn').onclick = async e => {
       e.preventDefault();
       const tabs = await gsChrome.tabsQuery();
       const tabUrls = tabs
@@ -218,23 +218,23 @@
               : tab.url
         )
         .filter(
-          url => !gsUtils.isSuspendedUrl(url) && gsUtils.checkWhiteList(url)
+          url => !gsUtils.isSuspendedUrl(url) && gsUtils.checkAllowList(url)
         )
         .map(url => (url.length > 55 ? url.substr(0, 52) + '...' : url));
       if (tabUrls.length === 0) {
-        alert(chrome.i18n.getMessage('js_options_whitelist_no_matches'));
+        alert(chrome.i18n.getMessage('js_options_allowlist_no_matches'));
         return;
       }
       const firstUrls = tabUrls.splice(0, 22);
       let alertString = `${chrome.i18n.getMessage(
-        'js_options_whitelist_matches_heading'
+        'js_options_allowlist_matches_heading'
       )}\n${firstUrls.join('\n')}`;
 
       if (tabUrls.length > 0) {
         alertString += `\n${chrome.i18n.getMessage(
-          'js_options_whitelist_matches_overflow_prefix'
+          'js_options_allowlist_matches_overflow_prefix'
         )} ${tabUrls.length} ${chrome.i18n.getMessage(
-          'js_options_whitelist_matches_overflow_suffix'
+          'js_options_allowlist_matches_overflow_suffix'
         )}`;
       }
       alert(alertString);
