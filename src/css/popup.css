@@ -43,10 +43,6 @@ a {
   outline: none;
   color: #3477db;
 }
-#popupContent {
-  opacity: 0;
-  transition: opacity 200ms ease;
-}
 #statusDetail a {
   color: #ffffff;
 }
